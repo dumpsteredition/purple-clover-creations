@@ -37,75 +37,71 @@
     });
   }
 
-  /* ----- PULL THE YARN reveal ----- */
+  /* ----- PULL THE YARN / IDEA BASKET reveal ----- */
   var basket = document.querySelector(".basket");
   var ball = document.getElementById("yarnBall");
   var strg = document.querySelector(".yarn-string");
   var panel = document.getElementById("secretPanel");
+  var label = document.getElementById("yarnPullLabel");
 
-  if (basket && ball && strg) {
+  if (basket && ball) {
+    var OPEN_MAX = 72;     // px the string stretches while dragging / open
+    var DRAG_THRESH = 40;  // px of downward drag needed to force-open
+
     var dragging = false;
     var moved = 0;
     var startY = 0;
-    var pullPx = 0;
-    var THRESH = 70;
-    var MAXPULL = 96;
+    var pull = 0;
 
     function setOpen(open) {
       basket.setAttribute("data-open", open ? "true" : "false");
       ball.setAttribute("aria-expanded", open ? "true" : "false");
       if (panel) panel.setAttribute("aria-hidden", open ? "false" : "true");
-      pullPx = open ? MAXPULL : 0;
-      strg.style.height = (24 + (open ? MAXPULL : 0)) + "px";
+      if (label) label.textContent = open ? "Close the basket" : "Pull the yarn";
+      if (strg) { strg.style.transition = ""; strg.style.height = ""; }
+      ball.style.transform = "";
     }
 
-    ball.style.transition = "transform .35s cubic-bezier(.34,1.56,.64,1)";
-    strg.style.transition = "height .35s cubic-bezier(.34,1.56,.64,1)";
-
-    ball.addEventListener("pointerdown", function (ev) {
-      dragging = true;
-      moved = 0;
-      startY = ev.clientY;
-      ball.style.transition = "none";
-      strg.style.transition = "none";
-      ball.setPointerCapture(ev.pointerId);
-    });
-
-    ball.addEventListener("pointermove", function (ev) {
-      if (!dragging) return;
-      var delta = Math.max(0, ev.clientY - startY);
-      if (Math.abs(delta) > 6) moved++;
-      pullPx = Math.min(delta, MAXPULL);
-      strg.style.height = (24 + pullPx) + "px";
-      ball.style.transform = "translateY(" + pullPx + "px)";
-    });
-
-    function endDrag() {
-      if (!dragging) return;
-      dragging = false;
-      ball.style.transition = "transform .35s cubic-bezier(.34,1.56,.64,1)";
-      strg.style.transition = "height .35s cubic-bezier(.34,1.56,.64,1)";
-      var currentlyOpen = basket.getAttribute("data-open") === "true";
-      if (moved < 2) {
-        // a tap/click → toggle
-        setOpen(!currentlyOpen);
-      } else if (pullPx > THRESH) {
-        setOpen(true);
-      } else {
-        // snap back to current open state
-        setOpen(currentlyOpen);
-      }
-    }
-    ball.addEventListener("pointerup", endDrag);
-    ball.addEventListener("pointercancel", endDrag);
-
-    // keyboard support
+    // keyboard: Enter / Space toggle the basket
     ball.addEventListener("keydown", function (ev) {
       if (ev.key === "Enter" || ev.key === " ") {
         ev.preventDefault();
         setOpen(basket.getAttribute("data-open") !== "true");
       }
     });
+
+    // bonus: drag the ball downward to pop the lid; a plain tap toggles too
+    ball.addEventListener("pointerdown", function (ev) {
+      dragging = true; moved = 0; startY = ev.clientY; pull = 0;
+      if (strg) strg.style.transition = "none";
+      try { ball.setPointerCapture(ev.pointerId); } catch (e) {}
+    });
+
+    ball.addEventListener("pointermove", function (ev) {
+      if (!dragging) return;
+      var d = ev.clientY - startY;
+      if (Math.abs(d) > 6) moved++;
+      pull = Math.max(0, d);
+      var px = Math.min(pull, OPEN_MAX);
+      if (strg) strg.style.height = (14 + px) + "px";
+      ball.style.transform = "translateY(" + px + "px)";
+    });
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      var open = basket.getAttribute("data-open") === "true";
+      if (moved < 2) {
+        setOpen(!open);            // a tap/click → toggle
+      } else if (pull > DRAG_THRESH) {
+        setOpen(true);             // dragged far enough → open
+      } else {
+        setOpen(open);             // not far enough → snap back to current state
+      }
+    }
+    ball.addEventListener("pointerup", endDrag);
+    ball.addEventListener("pointercancel", endDrag);
+    ball.addEventListener("lostpointercapture", endDrag);
   }
 
   /* ----- FORM success + confetti ----- */

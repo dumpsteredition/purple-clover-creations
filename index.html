@@ -374,30 +374,61 @@
   </div>
 </section>
 
-<!-- ============ SECRET / PULL YARN REVEAL ============ -->
+<!-- ============ SECRET / IDEA BASKET REVEAL ============ -->
 <section id="secret" class="secret reveal">
   <div class="basket" data-open="false">
     <div class="basket-head">
-      <span class="kicker">psst…</span>
+      <span class="kicker">a little peek</span>
       <h2>Peek inside the yarn basket</h2>
-      <p>Pull the string to see how a wild idea becomes real.</p>
+      <p class="basket-cue">Pull the yarn to pop the lid and see how a doodle becomes a friend.</p>
+    </div>
+
+    <div class="basket-stage" aria-hidden="true">
+      <div class="basket-handle"></div>
+      <div class="basket-body"><span class="basket-band"></span></div>
+      <div class="peek-balls">
+        <span class="peek-ball pp1"></span>
+        <span class="peek-ball pp2"></span>
+        <span class="peek-ball pp3"></span>
+        <span class="peek-ball pp4"></span>
+      </div>
+      <div class="basket-lid"><span class="lid-knob"></span></div>
     </div>
 
     <div class="yarn-pull">
       <div class="yarn-string" aria-hidden="true"></div>
       <button class="yarn-ball" id="yarnBall" type="button"
-              aria-label="Pull the yarn to reveal a secret"
+              aria-label="Open the idea basket"
               aria-expanded="false" aria-controls="secretPanel">
-        <span aria-hidden="true">🧶</span>
+        <span class="yarn-ball-core" aria-hidden="true"></span>
       </button>
+      <span class="yarn-pull-label" id="yarnPullLabel">Pull the yarn</span>
     </div>
 
     <div class="reveal-panel" id="secretPanel" aria-hidden="true">
-      <div class="reveal-card">
-        <span class="clover-mini">🍀</span>
-        <h3>Every order starts as a doodle.</h3>
-        <p>Share the wiggliest, weirdest, sweetest idea you've got — a rainbow axolotl, a star with a tiny scarf, a bunny that matches your favorite sweater. We'll tell you honestly if we can bring it to life, and how.</p>
-        <p class="reveal-aside">Thanks for peeking — here's a little secret: mention <b>"clover"</b> in your message and we'll add a tiny free bonus friend to your first order.*</p>
+      <div class="basket-interior">
+        <span class="clover-mini" aria-hidden="true">🍀</span>
+        <h3>From a wiggly idea to a stitched friend.</h3>
+        <ol class="story-steps">
+          <li class="story-step">
+            <span class="story-emoji" aria-hidden="true">✏️</span>
+            <span class="story-text"><b>1 · Doodle it</b><em>Share the wiggliest, weirdest idea — a rainbow axolotl, a star with a tiny scarf.</em></span>
+          </li>
+          <li class="story-arrow" aria-hidden="true">↓</li>
+          <li class="story-step">
+            <span class="story-emoji" aria-hidden="true">🧶</span>
+            <span class="story-text"><b>2 · Color chat</b><em>We pick cozy yarns together — soft shades, the right weight for snuggles.</em></span>
+          </li>
+          <li class="story-arrow" aria-hidden="true">↓</li>
+          <li class="story-step">
+            <span class="story-emoji" aria-hidden="true">🧸</span>
+            <span class="story-text"><b>3 · Meet your friend</b><em>One loop at a time, it's hand-stitched and given a face &amp; a name.</em></span>
+          </li>
+        </ol>
+
+        <a class="btn btn--primary story-cta" href="#inquiry">Tell us your idea <span aria-hidden="true">→</span></a>
+
+        <p class="reveal-note"><span class="note-tag">psst</span> tucked inside: mention <b>&ldquo;clover&rdquo;</b> in your message and we&rsquo;ll add a tiny free bonus friend to your first order.*</p>
         <p class="reveal-fine">* while this little shop finds its feet; details confirmed when we chat.</p>
       </div>
     </div>
