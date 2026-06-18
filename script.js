@@ -313,10 +313,10 @@
     }
     if (creature === "cat") {
       return ""
-        + '<path d="M100 116 L86 38 L156 100 Z" fill="' + body + '"/>'
-        + '<path d="M220 116 L234 38 L164 100 Z" fill="' + body + '"/>'
-        + '<path d="M104 108 L98 62 L134 96 Z" fill="' + accent + '" opacity=".75"/>'
-        + '<path d="M216 108 L222 62 L186 96 Z" fill="' + accent + '" opacity=".75"/>'
+        + '<path d="M100 150 L86 38 L156 124 Z" fill="' + body + '"/>'
+        + '<path d="M220 150 L234 38 L164 124 Z" fill="' + body + '"/>'
+        + '<path d="M104 146 L98 62 L134 126 Z" fill="' + accent + '" opacity=".75"/>'
+        + '<path d="M216 146 L222 62 L186 126 Z" fill="' + accent + '" opacity=".75"/>'
         + '<ellipse cx="160" cy="192" rx="78" ry="80" fill="' + body + '"/>'
         + stitchLines(body, 160, 208, 62, 44)
         + '<path d="M236 228 Q286 232 288 196 Q290 158 254 168" fill="none" stroke="' + body + '" stroke-width="16" stroke-linecap="round"/>'
@@ -339,16 +339,19 @@
     }
     if (creature === "dragon") {
       return ""
-        + '<path d="M122 94 L112 32 L140 84 Z" fill="' + CREAM + '"/>'
-        + '<path d="M198 94 L208 32 L180 84 Z" fill="' + CREAM + '"/>'
-        + '<path d="M86 168 Q24 126 36 200 Q44 236 86 214 Z" fill="' + accent + '" opacity=".85"/>'
-        + '<path d="M234 168 Q296 126 284 200 Q276 236 234 214 Z" fill="' + accent + '" opacity=".85"/>'
+        /* two rounded horns — bases tucked into the head so they grow out of it */
+        + '<path d="M150 128 Q120 74 112 52 Q126 92 134 140 Z" fill="' + shade(body, 0.28) + '"/>'
+        + '<path d="M170 128 Q200 74 208 52 Q194 92 186 140 Z" fill="' + shade(body, 0.28) + '"/>'
+        /* scalloped side wings, anchored at the shoulders and sweeping up-and-out */
+        + '<path d="M104 150 Q40 86 26 102 Q44 126 58 138 Q44 156 50 176 Q66 186 84 190 Q96 188 104 184 Z" fill="' + accent + '" opacity=".85"/>'
+        + '<path d="M216 150 Q280 86 294 102 Q276 126 262 138 Q276 156 270 176 Q254 186 236 190 Q224 188 216 184 Z" fill="' + accent + '" opacity=".85"/>'
         + '<ellipse cx="160" cy="196" rx="80" ry="80" fill="' + body + '"/>'
         + '<ellipse cx="160" cy="224" rx="46" ry="38" fill="' + CREAM + '" opacity=".92"/>'
         + stitchLines(body, 160, 182, 58, 28)
-        + '<path d="M244 252 L288 268 L244 282 Z" fill="' + accent + '"/>'
         + '<ellipse cx="120" cy="260" rx="22" ry="12" fill="' + body + '"/>'
-        + '<ellipse cx="200" cy="260" rx="22" ry="12" fill="' + body + '"/>';
+        + '<ellipse cx="200" cy="260" rx="22" ry="12" fill="' + body + '"/>'
+        /* spade-tipped tail, root overlapping the body so there's no white gap */
+        + '<path d="M216 224 Q252 220 274 236 L304 256 L274 276 Q252 248 210 244 Z" fill="' + accent + '"/>';
     }
     if (creature === "penguin") {
       return ""
@@ -362,13 +365,39 @@
         + '<ellipse cx="188" cy="276" rx="20" ry="10" fill="#FF9F40"/>';
     }
     if (creature === "octo") {
+      /* Tentacles hang from the head as connected lower-body limbs:
+         wide rounded bases are drawn first, then the head circle is
+         layered over them so each base tucks under the body (no gap).
+         Outer arms fan out and curl; inner arms hang shorter. A shade
+         underside peeks at each tip for plush dimension. */
+      var bw = 12, ty = 200;
+      var tent = [
+        { bx: 97,  tx: 89,  tip: 278 },   /* outer-left, curls out */
+        { bx: 122, tx: 117, tip: 284 },
+        { bx: 147, tx: 147, tip: 288 },   /* centre-left, hangs short */
+        { bx: 173, tx: 173, tip: 288 },   /* centre-right */
+        { bx: 198, tx: 203, tip: 284 },
+        { bx: 223, tx: 231, tip: 278 }    /* outer-right, curls out */
+      ];
+      var arms = "";
+      for (var i = 0; i < tent.length; i++) {
+        var t = tent[i];
+        var L = t.bx - bw, R = t.bx + bw;
+        var mid = Math.round(ty + (t.tip - ty) * 0.45);
+        var armD = "M" + L + " " + ty + " Q" + t.bx + " " + (ty - 4) + " " + R + " " + ty
+          + " C" + R + " " + mid + " " + (t.tx + 7) + " " + (t.tip - 12) + " " + t.tx + " " + t.tip
+          + " C" + (t.tx - 7) + " " + (t.tip - 12) + " " + L + " " + mid + " " + L + " " + ty + " Z";
+        /* shade underside: same limb nudged down + a touch wider, drawn behind */
+        arms += '<path transform="translate(0 3)" d="M' + (L - 1) + " " + ty
+          + " Q" + t.bx + " " + (ty - 4) + " " + (R + 1) + " " + ty
+          + " C" + (R + 1) + " " + mid + " " + (t.tx + 8) + " " + (t.tip - 12) + " " + t.tx + " " + t.tip
+          + " C" + (t.tx - 8) + " " + (t.tip - 12) + " " + (L - 1) + " " + mid + " " + (L - 1) + " " + ty
+          + ' Z" fill="' + dark + '" opacity=".28"/>';
+        /* body-coloured front of the limb */
+        arms += '<path d="' + armD + '" fill="' + body + '"/>';
+      }
       return ""
-        + '<path d="M88 220 Q74 260 94 278 Q108 262 102 232 Z" fill="' + body + '"/>'
-        + '<path d="M116 232 Q108 272 130 282 Q140 264 130 238 Z" fill="' + body + '"/>'
-        + '<path d="M146 240 Q144 282 160 286 Q160 264 158 244 Z" fill="' + body + '"/>'
-        + '<path d="M174 240 Q176 282 160 286 Q160 264 162 244 Z" fill="' + body + '"/>'
-        + '<path d="M204 232 Q212 272 190 282 Q180 264 190 238 Z" fill="' + body + '"/>'
-        + '<path d="M232 220 Q246 260 226 278 Q212 262 218 232 Z" fill="' + body + '"/>'
+        + arms
         + '<circle cx="160" cy="158" r="90" fill="' + body + '"/>'
         + stitchLines(body, 160, 172, 78, 50)
         + '<circle cx="96" cy="196" r="14" fill="' + accent + '" opacity=".5"/>'
@@ -468,20 +497,47 @@
   function extraParts(extra, accent, creature) {
     var aDark = shade(accent, 0.22);
     var aDeep = shade(accent, 0.35);
-    /* ---- SCARF: draped around the neck / upper body, with a hanging tail ---- */
+    /* ---- SCARF: draped around the neck / upper chest, with a hanging tail ----
+       The band is lifted to neck level (just under the chin at y≈196) so it
+       reads as a scarf, not a belly belt. A small per-creature `neckY` keeps it
+       hugging each body's neck line: penguin sits lowest (clear of its beak,
+       which reaches y≈202), the round heads sit highest. extraParts is drawn
+       before faceParts, so the face/mouth always render on top regardless. */
     if (extra === "scarf") {
+      var neckY = { bunny: 199, cat: 199, bear: 201, dragon: 203, penguin: 206, octo: 199 }[creature] || 201;
+      var t = neckY;                              /* top edge of the draped band */
       return ""
-        + '<path d="M80 214 Q160 246 240 214 L244 236 Q160 268 76 236 Z" fill="' + accent + '"/>'            /* main band wrapping the neck */
-        + '<path d="M82 216 Q160 246 238 216" stroke="' + aDark + '" stroke-width="2" fill="none" opacity=".55"/>'  /* top ridge */
-        + '<path d="M80 234 Q160 264 240 234" stroke="' + aDark + '" stroke-width="2" fill="none" opacity=".45"/>'  /* bottom ridge */
-        + '<path d="M82 218 Q66 226 78 242 L100 238 Q94 224 98 212 Z" fill="' + shade(accent, 0.12) + '"/>'         /* knot where tail tucks under */
-        + '<path d="M86 232 L60 296 L104 280 Z" fill="' + shade(accent, 0.12) + '"/>'                                /* hanging tail */
-        + '<path d="M60 296 l-3 13 M76 292 l-1 15 M92 286 l3 14 M104 280 l7 12" stroke="' + aDeep + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>' /* fringe */
-        + '<path d="M120 230 l9 -3 M150 237 l9 -3 M180 237 l9 -3 M210 230 l9 -3" stroke="' + aDark + '" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>'; /* crochet dashes */
+        + '<path d="M80 ' + t + ' Q160 ' + (t + 22) + ' 240 ' + t + ' L240 ' + (t + 20) + ' Q160 ' + (t + 42) + ' 80 ' + (t + 20) + ' Z" fill="' + accent + '"/>'          /* main band draped across the neck/upper chest */
+        + '<path d="M82 ' + (t + 2) + ' Q160 ' + (t + 22) + ' 238 ' + (t + 2) + '" stroke="' + aDark + '" stroke-width="2" fill="none" opacity=".55"/>'                    /* top ridge */
+        + '<path d="M80 ' + (t + 18) + ' Q160 ' + (t + 40) + ' 240 ' + (t + 18) + '" stroke="' + aDark + '" stroke-width="2" fill="none" opacity=".45"/>'                  /* bottom ridge */
+        + '<path d="M82 ' + (t + 8) + ' Q64 ' + (t + 16) + ' 76 ' + (t + 30) + ' L100 ' + (t + 26) + ' Q94 ' + (t + 14) + ' 98 ' + (t + 2) + ' Z" fill="' + shade(accent, 0.12) + '"/>'  /* knot where the tail tucks under */
+        + '<path d="M86 ' + (t + 26) + ' L62 294 L104 ' + (t + 58) + ' Z" fill="' + shade(accent, 0.12) + '"/>'                                                            /* hanging tail over the chest */
+        + '<path d="M62 294 l-3 11 M76 290 l-1 13 M90 285 l3 12 M102 280 l6 11" stroke="' + aDeep + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>'           /* fringe at the tail tip */
+        + '<path d="M118 ' + (t + 10) + ' l9 -3 M150 ' + (t + 15) + ' l9 -3 M182 ' + (t + 15) + ' l9 -3 M212 ' + (t + 10) + ' l9 -3" stroke="' + aDark + '" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>'; /* crochet dashes */
     }
-    /* ---- BOW: ribbon on the side of the head / ear ---- */
+    /* ---- BOW / FLOWER / HAT are creature-aware: each accessory tucks against
+       the current creature's head, ears, horns, or crown instead of one generic
+       spot. Bow hugs the LEFT ear/horn/side, flower the RIGHT, and the party-hat
+       brim rides each head's top contour. Brims always stay above the eyes
+       (y≈168) and mouth (y≈196). Scarf is untouched above. ---- */
+    /* bow knot anchor [x, y] — set at each head's left edge / ear-horn base */
+    var BOW_AT    = { bunny: [116, 128], cat: [100, 140], bear: [102, 142], dragon: [112, 138], penguin: [98, 150], octo: [80, 150] };
+    /* flower centre anchor [x, y] — mirror of the bow, on the right side */
+    var FLOWER_AT = { bunny: [204, 128], cat: [220, 140], bear: [218, 142], dragon: [208, 138], penguin: [222, 150], octo: [236, 150] };
+    /* party hat per crown: [brimLeftX, brimY, brimWidth, apexY] */
+    var HAT_AT = {
+      bunny:   [130, 112, 60,  52],   /* nestled between the two tall ears */
+      cat:     [128, 116, 64,  50],   /* in the notch between the pointy ears */
+      bear:    [125, 116, 70,  52],   /* between the round ear circles */
+      dragon:  [125, 116, 70,  50],   /* between the two horns */
+      penguin: [122, 108, 76,  46],   /* perched on the bare round crown */
+      octo:    [105, 92,  110, 30]    /* riding the big bulbous head */
+    };
+
+    /* ---- BOW: ribbon tucked by the left ear / horn / side of head ---- */
     if (extra === "bow") {
-      return '<g transform="translate(116 120)">'
+      var ba = BOW_AT[creature] || BOW_AT.bunny;
+      return '<g transform="translate(' + ba[0] + " " + ba[1] + ')">'
         + '<path d="M0 0 L-30 -16 Q-33 0 -30 16 Z" fill="' + accent + '"/>'           /* left loop, notched inner edge */
         + '<path d="M0 0 L30 -16 Q33 0 30 16 Z" fill="' + accent + '"/>'              /* right loop */
         + '<path d="M-4 6 L-12 26 L3 18 Z" fill="' + shade(accent, 0.1) + '"/>'       /* left tail */
@@ -490,9 +546,10 @@
         + '<path d="M-7 -2 Q0 5 7 -2" stroke="' + aDeep + '" stroke-width="1.4" fill="none"/>'  /* knot wrap */
         + "</g>";
     }
-    /* ---- FLOWER: 5-petal bloom tucked by the ear ---- */
+    /* ---- FLOWER: 5-petal bloom tucked by the right ear / horn / side of head ---- */
     if (extra === "flower") {
-      var p = '<g transform="translate(208 116)">';
+      var fa = FLOWER_AT[creature] || FLOWER_AT.bunny;
+      var p = '<g transform="translate(' + fa[0] + " " + fa[1] + ')">';
       var degs = [0, 72, 144, 216, 288];
       for (var i = 0; i < degs.length; i++) {
         p += '<ellipse cx="0" cy="-13" rx="8" ry="12" fill="' + accent + '" transform="rotate(' + degs[i] + ')"/>';
@@ -503,14 +560,23 @@
         + "</g>";
       return p;
     }
-    /* ---- PARTY HAT: cone sitting on the head, between the ears ---- */
+    /* ---- PARTY HAT: cone whose brim rides each creature's head/top contour ---- */
     if (extra === "hat") {
+      var ha = HAT_AT[creature] || HAT_AT.bunny;
+      var bx = ha[0], by = ha[1], bw = ha[2], ay = ha[3];
+      var cx = 160;                              /* head centre */
+      var baseY = by + 4;                        /* cone base sits just under the brim */
+      var baseL = bx + 6, baseR = bx + bw - 6;   /* cone base inset from the brim ends */
+      /* tapered stripe band ~52–64% down the cone, following its taper */
+      var f1 = 0.52, f2 = 0.64;
+      var y1 = ay + (baseY - ay) * f1, y2 = ay + (baseY - ay) * f2;
+      var hw1 = (baseR - baseL) / 2 * f1, hw2 = (baseR - baseL) / 2 * f2;
       return ""
-        + '<rect x="118" y="124" width="84" height="13" rx="6" fill="' + aDark + '"/>'               /* brim */
-        + '<path d="M126 126 L160 60 L194 126 Z" fill="' + accent + '"/>'                            /* cone */
-        + '<path d="M140 108 L180 108 L176 94 L144 94 Z" fill="' + shade(accent, 0.15) + '" opacity=".7"/>'  /* stripe */
-        + '<circle cx="160" cy="58" r="9" fill="#FFE27A"/>'                                          /* pom */
-        + '<circle cx="158" cy="56" r="3" fill="#fff" opacity=".75"/>';                              /* pom shine */
+        + '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="13" rx="6" fill="' + aDark + '"/>'                 /* brim on the crown */
+        + '<path d="M' + baseL + " " + baseY + " L" + cx + " " + ay + " L" + baseR + " " + baseY + ' Z" fill="' + accent + '"/>'  /* cone */
+        + '<path d="M' + (cx - hw2) + " " + y2 + " L" + (cx + hw2) + " " + y2 + " L" + (cx + hw1) + " " + y1 + " L" + (cx - hw1) + " " + y1 + ' Z" fill="' + shade(accent, 0.15) + '" opacity=".7"/>'  /* stripe */
+        + '<circle cx="' + cx + '" cy="' + (ay - 2) + '" r="9" fill="#FFE27A"/>'                                             /* pom */
+        + '<circle cx="' + (cx - 2) + '" cy="' + (ay - 4) + '" r="3" fill="#fff" opacity=".75"/>';                           /* pom shine */
     }
     return "";
   }
