@@ -9,8 +9,9 @@
   --purple-wash:#EFE3FB;
   --mint:#8FD8B6;
   --sage:#A9D8B0;
-  --butter:#FFE27A;
-  --butter-deep:#E0B400;
+  /* accent shifted from butter yellow to clover green (#93db68) */
+  --butter:#93db68;
+  --butter-deep:#4f9128;
   --pink:#FF9DC0;
   --pink-deep:#F47FB0;
   --cream:#FFF8EA;
@@ -37,7 +38,7 @@ body{
     radial-gradient(circle at 12% 18%, rgba(157,111,224,.07) 0 2px, transparent 3px),
     radial-gradient(circle at 80% 30%, rgba(255,157,192,.08) 0 2px, transparent 3px),
     radial-gradient(circle at 45% 75%, rgba(143,216,182,.08) 0 2px, transparent 3px),
-    radial-gradient(circle at 90% 85%, rgba(255,226,122,.1) 0 2px, transparent 3px);
+    radial-gradient(circle at 90% 85%, rgba(147,219,104,.1) 0 2px, transparent 3px);
   background-size:120px 120px,160px 160px,140px 140px,180px 180px;
   line-height:1.6;
   overflow-x:hidden;
@@ -231,7 +232,7 @@ section{padding:clamp(48px,7vw,90px) clamp(16px,5vw,56px);position:relative}
   border-color:var(--butter-deep);padding:clamp(26px,4vw,42px);
 }
 .basket-head h2{font-size:clamp(1.6rem,4vw,2.3rem)}
-.basket-head p{color:var(--ink-soft);margin:4px auto 0;max-width:40ch}
+.basket-head p{color:var(--ink);margin:4px auto 0;max-width:40ch}
 
 .yarn-pull{
   position:relative;height:120px;margin:26px auto 6px;width:80px;
