@@ -1,0 +1,16 @@
+{
+  "name": "purple-clover-creations",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Whimsical static landing page for Purple Clover Creations.",
+  "scripts": {
+    "verify": "node --check script.js && node scripts/verify.mjs",
+    "start": "python3 -m http.server 8795"
+  },
+  "keywords": [
+    "landing-page",
+    "static-site",
+    "vercel"
+  ],
+  "license": "UNLICENSED"
+}

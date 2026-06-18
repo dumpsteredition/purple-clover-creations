@@ -1,0 +1,7 @@
+.git
+.vercel
+node_modules
+artifacts
+*.png
+*.log
+.DS_Store
