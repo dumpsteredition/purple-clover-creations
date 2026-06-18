@@ -221,7 +221,10 @@
     { id: "sleepy", name: "Sleepy" },
     { id: "cheeky", name: "Cheeky" },
     { id: "surprised", name: "Starstruck" },
-    { id: "calm", name: "Calm" }
+    { id: "calm", name: "Calm" },
+    { id: "love", name: "Smitten" },
+    { id: "wink", name: "Wink" },
+    { id: "smug", name: "Smug" }
   ];
 
   var EXTRAS = [
@@ -380,14 +383,31 @@
     return '<ellipse cx="116" cy="186" rx="10" ry="6" fill="#FF9DC0" opacity=".55"/>'
          + '<ellipse cx="204" cy="186" rx="10" ry="6" fill="#FF9DC0" opacity=".55"/>';
   }
+  /* a tidy heart shape centred at (cx,cy); s scales it (~0.6..1.1) */
+  function heart(cx, cy, s, c) {
+    return '<path transform="translate(' + cx + " " + cy + ") scale(" + s + ')" '
+      + 'd="M0 6 C -10 -6 -22 4 -12 14 C -7 19 0 22 0 24 C 0 22 7 19 12 14 C 22 4 10 -6 0 6 Z" '
+      + 'fill="' + c + '"/>';
+  }
+  /* a single winking eyelid arc (closed eye) */
+  function winkArc(x, y) {
+    return '<path d="M' + (x - 8) + " " + (y + 1) + " Q" + x + " " + (y + 10) + " " + (x + 8) + " " + (y + 1) + '" '
+      + 'stroke="' + INK + '" stroke-width="3.6" fill="none" stroke-linecap="round"/>';
+  }
 
   function faceParts(face, creature) {
     var lx = 138, rx = 182, eyeY = 168, mouthY = 196;
     var noMouth = creature === "penguin"; // beak already drawn
+    function smile(deep, w) {
+      if (noMouth) return "";
+      var hw = (w || 12);
+      return '<path d="M' + (160 - hw) + " " + mouthY
+        + " Q160 " + (mouthY + (deep || 10)) + " " + (160 + hw) + " " + mouthY
+        + '" stroke="' + INK + '" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+    }
     if (face === "happy") {
       return dot(lx, eyeY, 7, INK) + shine(lx, eyeY) + dot(rx, eyeY, 7, INK) + shine(rx, eyeY)
-        + (noMouth ? "" : '<path d="M148 ' + mouthY + " Q160 " + (mouthY + 10) + " 172 " + mouthY + '" stroke="' + INK + '" stroke-width="3.4" fill="none" stroke-linecap="round"/>')
-        + blushes();
+        + smile(10, 12) + blushes();
     }
     if (face === "sleepy") {
       return ""
@@ -398,49 +418,99 @@
         + '<text x="226" y="150" font-size="20" aria-hidden="true">💤</text>';
     }
     if (face === "cheeky") {
+      /* one open eye + one wink, plus a clean little open mouth with a tongue poking out */
+      var cheekyMouth = noMouth ? "" :
+          '<path d="M152 ' + mouthY + ' Q160 ' + (mouthY + 11) + ' 168 ' + mouthY + ' Z" fill="' + INK + '"/>'      /* small open mouth */
+        + '<path d="M156 ' + (mouthY + 2) + ' Q160 ' + (mouthY + 13) + ' 164 ' + (mouthY + 2) + ' Z" fill="#FF6B6B"/>' /* tongue */
+        + '<path d="M152 ' + mouthY + ' Q160 ' + (mouthY + 11) + ' 168 ' + mouthY + '" stroke="' + INK + '" stroke-width="1.6" fill="none"/>';
       return dot(lx, eyeY, 7, INK) + shine(lx, eyeY)
-        + '<path d="M' + (rx - 7) + " " + (eyeY + 2) + " Q" + rx + " " + (eyeY + 9) + " " + (rx + 7) + " " + (eyeY + 2) + '" stroke="' + INK + '" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
-        + (noMouth ? "" : '<path d="M148 ' + (mouthY - 2) + " Q160 " + (mouthY + 14) + " 174 " + (mouthY - 2) + " Q168 " + (mouthY + 4) + " 160 " + (mouthY + 7) + " Q152 " + (mouthY + 4) + " 148 " + (mouthY - 2) + ' Z" fill="' + INK + '"/>')
-        + blushes();
+        + winkArc(rx, eyeY)
+        + cheekyMouth
+        + '<ellipse cx="116" cy="190" rx="12" ry="7" fill="#FF9DC0" opacity=".75"/>'
+        + '<ellipse cx="204" cy="190" rx="12" ry="7" fill="#FF9DC0" opacity=".75"/>';
     }
     if (face === "surprised") {
       return dot(lx, eyeY, 8, INK) + shine(lx, eyeY) + dot(rx, eyeY, 8, INK) + shine(rx, eyeY)
         + (noMouth ? "" : '<ellipse cx="160" cy="' + (mouthY + 3) + '" rx="6" ry="8" fill="' + INK + '"/>')
-        + blushes();
+        + blushes()
+        + '<g fill="#FFE27A">'
+        + '<path d="M160 124 L163 134 L173 134 L165 140 L168 150 L160 144 L152 150 L155 140 L147 134 L157 134 Z"/>'
+        + '</g>';
     }
     if (face === "calm") {
       return dot(lx, eyeY, 5.5, INK) + dot(rx, eyeY, 5.5, INK)
-        + (noMouth ? "" : '<path d="M150 ' + mouthY + " Q160 " + (mouthY + 5) + " 170 " + mouthY + '" stroke="' + INK + '" stroke-width="3" fill="none" stroke-linecap="round"/>')
+        + smile(5, 11) + blushes();
+    }
+    if (face === "love") {
+      return heart(lx, eyeY, 0.62, "#FF6B6B") + heart(rx, eyeY, 0.62, "#FF6B6B")
+        + smile(12, 13) + blushes()
+        + '<text x="118" y="150" font-size="16" aria-hidden="true">💜</text>';
+    }
+    if (face === "wink") {
+      return dot(lx, eyeY, 7, INK) + shine(lx, eyeY)
+        + winkArc(rx, eyeY)
+        /* playful asymmetric smirk */
+        + (noMouth ? "" :
+            '<path d="M150 ' + (mouthY + 1) + ' Q158 ' + (mouthY + 9) + ' 170 ' + (mouthY - 1) + '" stroke="' + INK + '" stroke-width="3.4" fill="none" stroke-linecap="round"/>')
         + blushes();
+    }
+    if (face === "smug") {
+      /* small side-glancing eyes + raised eyebrow + little knowing smirk */
+      return dot(lx, eyeY, 5.5, INK) + dot(rx, eyeY, 5.5, INK)
+        + '<path d="M' + (rx - 8) + ' ' + (eyeY - 11) + ' q8 -4 16 1" stroke="' + INK + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
+        + (noMouth ? "" :
+            '<path d="M150 ' + (mouthY + 2) + ' Q159 ' + (mouthY + 4) + ' 170 ' + (mouthY - 2) + '" stroke="' + INK + '" stroke-width="3.2" fill="none" stroke-linecap="round"/>')
+        + '<ellipse cx="206" cy="190" rx="12" ry="7" fill="#FF9DC0" opacity=".65"/>';
     }
     return "";
   }
 
-  function extraParts(extra, accent) {
+  function extraParts(extra, accent, creature) {
+    var aDark = shade(accent, 0.22);
+    var aDeep = shade(accent, 0.35);
+    /* ---- SCARF: draped around the neck / upper body, with a hanging tail ---- */
     if (extra === "scarf") {
-      return '<path d="M82 246 Q160 268 238 246 L238 262 Q160 282 82 262 Z" fill="' + accent + '"/>'
-        + '<rect x="78" y="258" width="14" height="32" rx="5" fill="' + shade(accent, 0.15) + '"/>'
-        + '<path d="M78 258 l7 9 l7 -9 M78 274 l7 9 l7 -9" stroke="' + shade(accent, 0.32) + '" stroke-width="2" fill="none"/>';
+      return ""
+        + '<path d="M80 214 Q160 246 240 214 L244 236 Q160 268 76 236 Z" fill="' + accent + '"/>'            /* main band wrapping the neck */
+        + '<path d="M82 216 Q160 246 238 216" stroke="' + aDark + '" stroke-width="2" fill="none" opacity=".55"/>'  /* top ridge */
+        + '<path d="M80 234 Q160 264 240 234" stroke="' + aDark + '" stroke-width="2" fill="none" opacity=".45"/>'  /* bottom ridge */
+        + '<path d="M82 218 Q66 226 78 242 L100 238 Q94 224 98 212 Z" fill="' + shade(accent, 0.12) + '"/>'         /* knot where tail tucks under */
+        + '<path d="M86 232 L60 296 L104 280 Z" fill="' + shade(accent, 0.12) + '"/>'                                /* hanging tail */
+        + '<path d="M60 296 l-3 13 M76 292 l-1 15 M92 286 l3 14 M104 280 l7 12" stroke="' + aDeep + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>' /* fringe */
+        + '<path d="M120 230 l9 -3 M150 237 l9 -3 M180 237 l9 -3 M210 230 l9 -3" stroke="' + aDark + '" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>'; /* crochet dashes */
     }
+    /* ---- BOW: ribbon on the side of the head / ear ---- */
     if (extra === "bow") {
-      return '<g transform="translate(112 118)">'
-        + '<path d="M0 0 L-24 -15 L-24 15 Z" fill="' + accent + '"/>'
-        + '<path d="M0 0 L24 -15 L24 15 Z" fill="' + accent + '"/>'
-        + '<circle cx="0" cy="0" r="8" fill="' + shade(accent, 0.2) + '"/>'
+      return '<g transform="translate(116 120)">'
+        + '<path d="M0 0 L-30 -16 Q-33 0 -30 16 Z" fill="' + accent + '"/>'           /* left loop, notched inner edge */
+        + '<path d="M0 0 L30 -16 Q33 0 30 16 Z" fill="' + accent + '"/>'              /* right loop */
+        + '<path d="M-4 6 L-12 26 L3 18 Z" fill="' + shade(accent, 0.1) + '"/>'       /* left tail */
+        + '<path d="M4 6 L12 26 L-3 18 Z" fill="' + shade(accent, 0.1) + '"/>'        /* right tail */
+        + '<ellipse cx="0" cy="0" rx="7" ry="9" fill="' + aDark + '"/>'               /* knot */
+        + '<path d="M-7 -2 Q0 5 7 -2" stroke="' + aDeep + '" stroke-width="1.4" fill="none"/>'  /* knot wrap */
         + "</g>";
     }
+    /* ---- FLOWER: 5-petal bloom tucked by the ear ---- */
     if (extra === "flower") {
-      var p = "";
+      var p = '<g transform="translate(208 116)">';
       var degs = [0, 72, 144, 216, 288];
       for (var i = 0; i < degs.length; i++) {
-        p += '<ellipse cx="0" cy="-13" rx="7" ry="11" fill="' + accent + '" transform="translate(206 122) rotate(' + degs[i] + ')"/>';
+        p += '<ellipse cx="0" cy="-13" rx="8" ry="12" fill="' + accent + '" transform="rotate(' + degs[i] + ')"/>';
       }
-      return p + '<circle cx="206" cy="122" r="7" fill="#FFE27A"/>';
+      p += '<path d="M12 5 Q24 7 22 17 Q13 13 12 5 Z" fill="#8FD8B6"/>'              /* little leaf */
+        + '<circle cx="0" cy="0" r="7" fill="#FFE27A"/>'                              /* pollen centre */
+        + '<circle cx="-2" cy="-2" r="2.6" fill="#fff" opacity=".7"/>'                /* shine */
+        + "</g>";
+      return p;
     }
+    /* ---- PARTY HAT: cone sitting on the head, between the ears ---- */
     if (extra === "hat") {
-      return '<path d="M126 96 L160 26 L194 96 Z" fill="' + accent + '"/>'
-        + '<circle cx="160" cy="26" r="9" fill="#FFE27A"/>'
-        + '<rect x="118" y="92" width="84" height="11" rx="5" fill="' + shade(accent, 0.22) + '"/>';
+      return ""
+        + '<rect x="118" y="124" width="84" height="13" rx="6" fill="' + aDark + '"/>'               /* brim */
+        + '<path d="M126 126 L160 60 L194 126 Z" fill="' + accent + '"/>'                            /* cone */
+        + '<path d="M140 108 L180 108 L176 94 L144 94 Z" fill="' + shade(accent, 0.15) + '" opacity=".7"/>'  /* stripe */
+        + '<circle cx="160" cy="58" r="9" fill="#FFE27A"/>'                                          /* pom */
+        + '<circle cx="158" cy="56" r="3" fill="#fff" opacity=".75"/>';                              /* pom shine */
     }
     return "";
   }
@@ -452,7 +522,7 @@
     var accent = colorById(state.accent).hex;
     svg.innerHTML = ground()
       + creatureBody(state.creature, body, accent)
-      + extraParts(state.extra, accent)
+      + extraParts(state.extra, accent, state.creature)
       + faceParts(face, state.creature);
     updateChrome();
   }
@@ -474,6 +544,8 @@
     var bonus = CUDDLE_EXTRA[state.extra] || 0;
     if (state.face === "cheeky") bonus += 1;
     if (state.face === "happy") bonus += 1;
+    if (state.face === "love") bonus += 2;
+    if (state.face === "wink") bonus += 1;
     return Math.max(1, Math.min(10, base + bonus));
   }
 
@@ -510,10 +582,6 @@
   }
 
   /* ---------- choice buttons ---------- */
-  function faceEmoji(id) {
-    return ({ happy: "😄", sleepy: "😴", cheeky: "😜", surprised: "😮", calm: "🙂" })[id] || "😊";
-  }
-
   function choiceButton(value, label, emoji, currentId, onPick) {
     var b = document.createElement("button");
     b.type = "button";
@@ -524,6 +592,11 @@
                 + '<span class="ws-choice-label">' + label + "</span>";
     b.addEventListener("click", function () { onPick(); });
     return b;
+  }
+
+  function faceEmoji(id) {
+    return ({ happy: "😄", sleepy: "😴", cheeky: "😜", surprised: "😮", calm: "🙂",
+              love: "🥰", wink: "😉", smug: "😏" })[id] || "😊";
   }
 
   function colorButton(col, currentId, key, containerId) {
@@ -640,24 +713,69 @@
   }
 
   function downloadCard() {
-    var nm = (state.name && state.name.trim()) || "my-stuffy";
+    var nm = (state.name && state.name.trim()) || "your friend";
+    var fileNm = (state.name && state.name.trim()) || "my-stuffy";
     var body = colorById(state.body).hex;
     var accent = colorById(state.accent).hex;
-    var inner = ground()
+
+    /* the stuffy itself, drawn in its native 320×320 space */
+    var artInner = ground()
       + creatureBody(state.creature, body, accent)
-      + extraParts(state.extra, accent)
+      + extraParts(state.extra, accent, state.creature)
       + faceParts(state.face, state.creature);
-    var label = '<text x="160" y="308" font-family="Fredoka, sans-serif" font-size="20" font-weight="600" text-anchor="middle" fill="#4A3B6B">' + escapeXml(nm) + "</text>";
-    var tagline = '<text x="160" y="28" font-family="Nunito, sans-serif" font-size="13" text-anchor="middle" fill="#7B4FC4">Purple Clover Workshop · ' + escapeXml(taglineFor()) + "</text>";
-    var fullSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="640" height="640">'
-      + '<rect width="320" height="320" fill="#FFF8EA"/>'
-      + tagline + inner + label + "</svg>";
+
+    /* detail rows that mirror the on-page collectible card */
+    var details = [
+      ["creature", creatureById(state.creature).name],
+      ["yarn", colorById(state.body).name],
+      ["accent", colorById(state.accent).name],
+      ["mood", faceById(state.face).name],
+      ["extra", extraById(state.extra).name],
+      ["cuddle", cuddleScore() + "/10"]
+    ];
+    function row(label, value, y) {
+      return '<text x="650" y="' + y + '" font-family="Nunito, sans-serif" font-size="24" fill="#4A3B6B">'
+        + '<tspan font-family="Fredoka, sans-serif" font-weight="600" fill="#7B4FC4">' + escapeXml(label) + ":</tspan> "
+        + escapeXml(value) + "</text>";
+    }
+    var rowsSvg = "";
+    for (var i = 0; i < details.length; i++) {
+      rowsSvg += row(details[i][0], details[i][1], 258 + i * 44);
+    }
+
+    var fullSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="2000" height="1400">'
+      + '<defs><linearGradient id="cardbg" x1="0" y1="0" x2="1" y2="1">'
+      + '<stop offset="0" stop-color="#EFE3FB"/><stop offset="1" stop-color="#FFF0F6"/>'
+      + "</linearGradient></defs>"
+      /* background + dashed border, matching the on-page .ws-card look */
+      + '<rect width="1000" height="700" fill="url(#cardbg)"/>'
+      + '<rect x="18" y="18" width="964" height="664" rx="36" fill="none" stroke="#7B4FC4" stroke-width="4" stroke-dasharray="14 12"/>'
+      /* top banner */
+      + '<text x="500" y="52" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="26" font-weight="600" fill="#7B4FC4">🍀 Purple Clover Workshop</text>'
+      /* art panel — paper background, scaled up so every stitch stays visible */
+      + '<rect x="48" y="84" width="560" height="560" rx="24" fill="#FFFDF7" stroke="#4A3B6B" stroke-width="3"/>'
+      + '<g transform="translate(72 108) scale(1.6)">' + artInner + "</g>"
+      /* name + tagline */
+      + '<text x="650" y="148" font-family="Fredoka, sans-serif" font-size="44" font-weight="700" fill="#7B4FC4">' + escapeXml(nm) + "</text>"
+      + '<text x="650" y="190" font-family="Nunito, sans-serif" font-size="22" font-style="italic" fill="#6E5E94">' + escapeXml(taglineFor()) + "</text>"
+      + '<line x1="650" y1="212" x2="952" y2="212" stroke="#C9A6F0" stroke-width="2.5" stroke-dasharray="2 8" stroke-linecap="round"/>'
+      /* detail rows */
+      + rowsSvg
+      /* made-for footer — wrapped across lines so the whole phrase fits the
+         1000×700 card even with an 18-char name (right column is only ~300px). */
+      + '<text font-family="Nunito, sans-serif" font-size="15" fill="#6E5E94">'
+      + '<tspan x="650" y="584">made for ' + escapeXml(nm) + '</tspan>'
+      + '<tspan x="650" y="607">with yarn &amp; love at the</tspan>'
+      + '<tspan x="650" y="630">Purple Clover Workshop 🍀</tspan>'
+      + '</text>'
+      + "</svg>";
+
     try {
       var blob = new Blob([fullSvg], { type: "image/svg+xml" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
       a.href = url;
-      a.download = nm.toLowerCase().replace(/\s+/g, "-") + "-stuffy.svg";
+      a.download = fileNm.toLowerCase().replace(/\s+/g, "-") + "-stuffy.svg";
       document.body.appendChild(a);
       a.click();
       a.remove();
