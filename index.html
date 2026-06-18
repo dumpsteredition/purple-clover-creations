@@ -40,6 +40,7 @@
   </a>
   <nav class="site-nav" aria-label="Primary">
     <a href="#shelf">Toys</a>
+    <a href="#workshop">Build a friend</a>
     <a href="#gallery">Gallery</a>
     <a href="#how">How it works</a>
     <a href="#maker">The maker</a>
@@ -163,6 +164,111 @@
       </article>
     </div>
   </div>
+</section>
+
+<!-- ============ CUSTOM STUFFY WORKSHOP ============ -->
+<section id="workshop" class="workshop reveal">
+  <div class="section-head">
+    <span class="kicker">make your own</span>
+    <h2>Custom Stuffy Workshop</h2>
+    <p>Stitch a one-of-a-kind little friend, one loop at a time. Pick a creature, choose your yarn, give it a face and a name. Watch it come alive on the left. 🧶</p>
+  </div>
+
+  <!-- sticky-ish action bar -->
+  <div class="workshop-topbar">
+    <div class="nametag" id="wsNametag" title="your friend's name tag">
+      <span class="nametag-pin" aria-hidden="true">📌</span>
+      <span class="nametag-text" id="wsNametagText">your friend</span>
+    </div>
+    <div class="meter" aria-label="Cuddle meter">
+      <span class="meter-label">cuddle meter</span>
+      <span class="meter-track"><span class="meter-bar" id="wsMeterBar" style="width:70%"></span></span>
+      <span class="meter-value" id="wsMeterValue">7</span>
+    </div>
+    <div class="workshop-actions">
+      <button class="btn btn--ghost" id="wsShake" type="button">🧺 Shake basket</button>
+      <button class="btn btn--pop" id="wsDownload" type="button">⬇️ Download card</button>
+    </div>
+  </div>
+
+  <div class="workshop-grid">
+    <!-- LEFT: live preview -->
+    <div class="ws-preview-pane">
+      <span class="ws-preview-label">live plush preview</span>
+      <div class="ws-stage" id="wsStage">
+        <svg id="wsSvg" viewBox="0 0 320 320" width="100%" height="100%" role="img" aria-label="Your handmade stuffy preview"></svg>
+      </div>
+      <p class="ws-summary" id="wsSummary" aria-live="polite">Bunny · lavender · Happy · Just as is</p>
+    </div>
+
+    <!-- RIGHT: builder controls -->
+    <div class="ws-controls-pane">
+      <ol class="ws-rail" id="wsRail" aria-label="Builder steps">
+        <li data-step="0" class="is-active" tabindex="0"><span>1</span> creature</li>
+        <li data-step="1" tabindex="0"><span>2</span> yarn</li>
+        <li data-step="2" tabindex="0"><span>3</span> accent</li>
+        <li data-step="3" tabindex="0"><span>4</span> face</li>
+        <li data-step="4" tabindex="0"><span>5</span> extra</li>
+        <li data-step="5" tabindex="0"><span>6</span> name</li>
+        <li data-step="6" tabindex="0"><span>7</span> card</li>
+      </ol>
+
+      <div class="ws-panels">
+        <div class="ws-panel is-active" data-panel="0">
+          <h3>Pick a creature</h3>
+          <div class="ws-choices" id="wsCreatures" role="group" aria-label="Choose a creature"></div>
+        </div>
+        <div class="ws-panel" data-panel="1">
+          <h3>Body yarn color</h3>
+          <div class="ws-choices" id="wsBodyColors" role="group" aria-label="Choose body yarn color"></div>
+        </div>
+        <div class="ws-panel" data-panel="2">
+          <h3>Accent color <span class="ws-sub">(ears, wings, scarf…)</span></h3>
+          <div class="ws-choices" id="wsAccentColors" role="group" aria-label="Choose accent color"></div>
+        </div>
+        <div class="ws-panel" data-panel="3">
+          <h3>Choose a face — hover to try souls</h3>
+          <div class="ws-choices" id="wsFaces" role="group" aria-label="Choose a face or mood"></div>
+        </div>
+        <div class="ws-panel" data-panel="4">
+          <h3>Add an accessory</h3>
+          <div class="ws-choices" id="wsExtras" role="group" aria-label="Choose an accessory"></div>
+        </div>
+        <div class="ws-panel" data-panel="5">
+          <h3>Name your friend</h3>
+          <label class="ws-field-label" for="wsNameInput">Type a playful name (grown-ups can help)</label>
+          <input class="ws-input" id="wsNameInput" type="text" maxlength="18" placeholder="e.g. Mochi, Biscuit, Clover" autocomplete="off" />
+          <p class="ws-hint">Keep it playful — a nickname or a made-up word is perfect. Please skip real full names. 💜</p>
+        </div>
+        <div class="ws-panel" data-panel="6">
+          <h3>Collectible card ready ✨</h3>
+          <div class="ws-card" id="wsCard">
+            <svg class="ws-card-art" id="wsCardArt" viewBox="0 0 320 320" role="img" aria-label="Finished stuffy"></svg>
+            <div class="ws-card-body">
+              <div class="ws-card-name" id="wsCardName">your friend</div>
+              <div class="ws-card-tag" id="wsCardTag">a custom crochet pal</div>
+              <ul class="ws-card-list">
+                <li><b>creature:</b> <span id="wsCardCreature">Bunny</span></li>
+                <li><b>yarn:</b> <span id="wsCardBodyColor">lavender</span></li>
+                <li><b>accent:</b> <span id="wsCardAccent">bubblegum</span></li>
+                <li><b>mood:</b> <span id="wsCardFace">Happy</span></li>
+                <li><b>extra:</b> <span id="wsCardExtra">Just as is</span></li>
+              </ul>
+              <p class="ws-card-made" id="wsCardMade">made with yarn &amp; love at the Purple Clover Workshop 🍀</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ws-nav">
+        <button class="btn btn--ghost" id="wsBack" type="button" disabled>↩ Unstitch</button>
+        <button class="btn btn--ghost" id="wsReset" type="button">🌀 Fresh yarn</button>
+        <button class="btn btn--primary" id="wsNext" type="button">Next stitch →</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="ws-foot">The workshop is a playful preview — it doesn't place an order or collect any details. When you're ready for real yarn, say hello through the form below and a grown-up will help. 🧶</p>
 </section>
 
 <!-- ============ HOW IT WORKS ============ -->
@@ -397,6 +503,7 @@
     </div>
     <nav class="foot-nav" aria-label="Footer">
       <a href="#shelf">Toys</a>
+      <a href="#workshop">Build a friend</a>
       <a href="#gallery">Gallery</a>
       <a href="#how">How it works</a>
       <a href="#inquiry">Say hi</a>

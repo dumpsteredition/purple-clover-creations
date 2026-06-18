@@ -41,6 +41,19 @@ for (const hook of interactionHooks) {
   }
 }
 
+/* workshop hooks */
+if (!html.includes('id="workshop"')) {
+  console.error('Missing workshop section (id="workshop")');
+  process.exit(1);
+}
+const workshopHooks = ['wsSvg', 'wsRail', 'wsNext', 'wsCreatures', 'wsDownload', 'wsShake'];
+for (const hook of workshopHooks) {
+  if (!html.includes(hook) && !js.includes(hook)) {
+    console.error(`Missing workshop hook: ${hook}`);
+    process.exit(1);
+  }
+}
+
 if (!css.includes('.reveal{opacity:1')) {
   console.error('Reveal content must be visible by default for screenshot-safe rendering.');
   process.exit(1);
