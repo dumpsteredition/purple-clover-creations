@@ -56,7 +56,13 @@
     function setOpen(open) {
       basket.setAttribute("data-open", open ? "true" : "false");
       ball.setAttribute("aria-expanded", open ? "true" : "false");
-      if (panel) panel.setAttribute("aria-hidden", open ? "false" : "true");
+      if (panel) {
+        panel.setAttribute("aria-hidden", open ? "false" : "true");
+        // inert keeps focusable kids (the CTA link) out of the tab order
+        // and the a11y tree while the basket is closed.
+        if (open) panel.removeAttribute("inert");
+        else panel.setAttribute("inert", "");
+      }
       if (label) label.textContent = open ? "Close the basket" : "Pull the yarn";
       if (strg) { strg.style.transition = ""; strg.style.height = ""; }
       ball.style.transform = "";
@@ -83,8 +89,9 @@
       if (Math.abs(d) > 6) moved++;
       pull = Math.max(0, d);
       var px = Math.min(pull, OPEN_MAX);
+      // only stretch the string — the ball rides it down in normal flow, so
+      // the strand never detaches from the ball mid-pull.
       if (strg) strg.style.height = (14 + px) + "px";
-      ball.style.transform = "translateY(" + px + "px)";
     });
 
     function endDrag() {

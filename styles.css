@@ -306,6 +306,9 @@ section{padding:clamp(48px,7vw,90px) clamp(16px,5vw,56px);position:relative}
   background-image:repeating-linear-gradient(180deg,var(--purple) 0 6px,var(--purple-deep) 6px 12px);
   transition:height .35s cubic-bezier(.34,1.56,.64,1);
 }
+/* open = the string stretches in normal flow, so the ball + label ride down
+   with it. No translateY on the ball, no magic margin on the label: the three
+   pieces stay attached and can never overlap in either state. */
 .basket[data-open="true"] .yarn-string{height:64px}
 .yarn-ball{
   width:58px;height:58px;padding:0;border:none;border-radius:50%;cursor:grab;
@@ -323,16 +326,21 @@ section{padding:clamp(48px,7vw,90px) clamp(16px,5vw,56px);position:relative}
 .yarn-ball:hover{transform:scale(1.08)}
 .yarn-ball:active{cursor:grabbing}
 .yarn-ball:focus-visible{outline:3px dashed var(--ink);outline-offset:4px}
-.basket[data-open="true"] .yarn-ball{transform:translateY(60px) scale(.85)}
+/* open ball just settles a touch smaller (string did the pulling) */
+.basket[data-open="true"] .yarn-ball{transform:scale(.93)}
 .yarn-pull-label{
-  margin-top:10px;font-family:var(--display);font-weight:600;font-size:.92rem;
+  margin-top:14px;font-family:var(--display);font-weight:600;font-size:.92rem;
   color:var(--purple-deep);background:var(--purple-wash);padding:4px 12px;border-radius:999px;
-  transition:margin-top .35s cubic-bezier(.34,1.56,.64,1);
 }
-/* open: the yarn ball dangles ~60px lower via translateY, so drop the label
-   beneath it (≈10px gap) so "Close the basket" reads cleanly instead of being
-   covered by the ball. */
-.basket[data-open="true"] .yarn-pull-label{margin-top:66px}
+/* tiny "pull down" affordance under the label — shown only when closed.
+   Nudge is DOWN-only so it can never collide with the label above it. */
+@keyframes pullNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.pull-hint{
+  margin-top:8px;font-family:var(--display);font-weight:600;font-size:.7rem;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--purple-deep);opacity:.8;
+  animation:pullNudge 2.2s ease-in-out infinite;
+}
+.basket[data-open="true"] .pull-hint{display:none}
 
 /* --- the reveal --- */
 .reveal-panel{
@@ -352,8 +360,8 @@ section{padding:clamp(48px,7vw,90px) clamp(16px,5vw,56px);position:relative}
 .story-emoji{font-size:1.5rem;line-height:1.1;flex:0 0 auto}
 .story-text{display:flex;flex-direction:column}
 .story-text b{font-family:var(--display);color:var(--purple-deep);font-size:.98rem}
-.story-text em{font-style:normal;color:var(--ink-soft);font-size:.92rem}
-.story-arrow{text-align:center;color:var(--purple);font-weight:700;font-size:1rem;line-height:1}
+.story-text em{font-style:normal;color:#5a4a7e;font-size:.92rem}
+.story-arrow{text-align:center;color:var(--purple-deep);font-weight:700;font-size:1rem;line-height:1}
 .story-cta{margin:6px auto 16px;display:inline-flex}
 .story-cta span{font-family:var(--display)}
 .reveal-note{
@@ -365,7 +373,18 @@ section{padding:clamp(48px,7vw,90px) clamp(16px,5vw,56px);position:relative}
   font-family:var(--display);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;
   padding:3px 8px;border-radius:999px;transform:rotate(-6deg);box-shadow:0 2px 0 #cba800;
 }
-.reveal-fine{font-size:.78rem;opacity:.7;text-align:center;font-style:italic;margin-top:10px}
+.reveal-fine{font-size:.78rem;opacity:.85;text-align:center;font-style:italic;margin-top:10px}
+
+/* --- reduced motion: stop the infinite peek-ball spill + snap transitions --- */
+@media (prefers-reduced-motion: reduce){
+  .basket .peek-ball,
+  .basket[data-open="true"] .peek-ball{animation:none !important}
+  .basket .basket-lid,
+  .basket .yarn-string,
+  .basket .yarn-ball,
+  .basket .reveal-panel,
+  .basket .pull-hint{transition-duration:.01ms !important;animation:none !important}
+}
 
 /* ---------- MAKER ---------- */
 .maker-card{max-width:860px;margin:0 auto;display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:center;padding:clamp(22px,4vw,34px)}

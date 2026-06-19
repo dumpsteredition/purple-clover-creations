@@ -398,17 +398,20 @@
     <div class="yarn-pull">
       <div class="yarn-string" aria-hidden="true"></div>
       <button class="yarn-ball" id="yarnBall" type="button"
-              aria-label="Open the idea basket"
+              aria-labelledby="yarnPullLabel"
               aria-expanded="false" aria-controls="secretPanel">
         <span class="yarn-ball-core" aria-hidden="true"></span>
       </button>
       <span class="yarn-pull-label" id="yarnPullLabel">Pull the yarn</span>
+      <span class="pull-hint" aria-hidden="true">▾ pull</span>
     </div>
 
-    <div class="reveal-panel" id="secretPanel" aria-hidden="true">
+    <!-- inert + aria-hidden keep the collapsed idea-flow out of the tab order
+         and the a11y tree until the basket is opened. -->
+    <div class="reveal-panel" id="secretPanel" role="region" aria-labelledby="secretPanelTitle" aria-hidden="true" inert>
       <div class="basket-interior">
         <span class="clover-mini" aria-hidden="true">🍀</span>
-        <h3>From a wiggly idea to a stitched friend.</h3>
+        <h3 id="secretPanelTitle">From a wiggly idea to a stitched friend.</h3>
         <ol class="story-steps">
           <li class="story-step">
             <span class="story-emoji" aria-hidden="true">✏️</span>
